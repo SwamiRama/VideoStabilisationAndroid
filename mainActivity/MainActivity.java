@@ -1,9 +1,13 @@
-package com.example.videostabilisation;
+package mainActivity;
 
 import java.io.File;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FrameGrabber.Exception;
+
+import videoStabilisation.StabilisationThread;
+
+import com.example.videostabilisation.R;
 
 import android.app.Activity;
 import android.os.AsyncTask;

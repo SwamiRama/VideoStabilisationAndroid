@@ -2,15 +2,15 @@ package videoStabilisation;
 
 import java.io.File;
 
-import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FrameGrabber.Exception;
+import videoStabilisation.motionCompensation.MotionCompensation;
+import videoStabilisation.motionEstimation.MotionEstimation;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.os.Environment;
 import android.util.Log;
 
+@SuppressLint("NewApi")
 public class StabilisationThread {
 
 	private Bitmap saveBitmap;
@@ -24,7 +24,14 @@ public class StabilisationThread {
 	private Bitmap src;
 	private Bitmap dst;
 	private Bitmap holder;
+	private int frameNumber;
+	private MotionEstimation motionEstimation;
+	private double TranslationX;
+	private double TranslationY;
+	private double Rotation;
+	private MotionCompensation motionCompensation;
 
+	@SuppressLint("InlinedApi")
 	public StabilisationThread(long lengthInTime, double frameRate,
 			double maxFrame, File file) {
 		this.lengthInTime = lengthInTime;
@@ -34,32 +41,59 @@ public class StabilisationThread {
 		this.retriever.setDataSource(file.toString());
 		this.currentLengthInTime = 0;
 		this.isFinished = false;
-		this.mFps = (long) ((1.0 / frameRate) * 1000000);
+		this.frameNumber = 0;
+		this.motionEstimation = new MotionEstimation(16, 50, 30, true);
+		this.motionCompensation = new MotionCompensation();
 	}
 
-	public void next() {		
+	public void next() {
 		if (currentLengthInTime < lengthInTime) {
 			if (currentLengthInTime == 0) {
 				src = retriever.getFrameAtTime(currentLengthInTime);
-				dst = retriever.getFrameAtTime(currentLengthInTime+mFps);				
+				dst = retriever.getFrameAtTime(currentLengthInTime + mFps);
 			} else {
 				src = holder;
-				dst = retriever.getFrameAtTime(currentLengthInTime+mFps);
+				dst = retriever.getFrameAtTime(currentLengthInTime + mFps);
 			}
 			if (src == null || dst == null) {
-				Log.w("WARNING", "dst or src is NULL near Frame = " + currentLengthInTime);
+				Log.w("WARNING", "dst or src is NULL near Frame = "
+						+ currentLengthInTime);
 			} else {
 				saveBitmap = calculateStabilisation(src, dst);
+				DLH.Converter.saveBitmap(saveBitmap, frameNumber);
 			}
-			
 		} else {
 			isFinished = true;
 		}
+		holder = dst;
 		currentLengthInTime += mFps;
+		frameNumber++;
+		Log.i("Progress", "Progress =" + frameNumber + " of " + maxFrame);
 	}
 
 	private Bitmap calculateStabilisation(Bitmap src, Bitmap dst) {
-		return saveBitmap;
+		motionEstimation.startMotionEstimation(src, dst);
+
+		TranslationX = motionEstimation.getTranslationX();
+		TranslationY = motionEstimation.getTranslationY();
+		Rotation = motionEstimation.getRotation();
+//		xValues.Enqueue(TranslationX);
+//		yValues.Enqueue(TranslationY);
+//		rotationValue.Enqueue(Rotation);
+		// zoomFaktor = motionEstimation.getScaling();
+		motionCompensation.bitmapTransformation(TranslationX, TranslationY, Rotation, dst);
+
+		// motionCompensation.startMotionCompensation(0, 0, 45, 0, 0, 0,
+		// dstBitmap);
+		// image =
+		// UnmanagedImage.FromManagedImage(motionCompensation.saveBitmap);
+		// for (int i = 0; i < motionEstimation.vectorsPoints.Length; i++)
+		// {
+		// Drawing.Line(image, motionEstimation.vectorsPoints[i][0],
+		// motionEstimation.vectorsPoints[i][1], Color.Red);
+		// }
+		// return image.ToManagedImage();
+		return motionCompensation.getBitmap();
 	}
 
 	public Bitmap getCurrentBitmap() {

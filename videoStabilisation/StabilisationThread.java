@@ -42,7 +42,7 @@ public class StabilisationThread {
 		this.currentLengthInTime = 0;
 		this.isFinished = false;
 		this.frameNumber = 0;
-		this.motionEstimation = new MotionEstimation(16, 50, 30, true);
+		this.motionEstimation = new MotionEstimation(8, 20, 30, true);
 		this.motionCompensation = new MotionCompensation();
 	}
 
@@ -60,6 +60,7 @@ public class StabilisationThread {
 						+ currentLengthInTime);
 			} else {
 				saveBitmap = calculateStabilisation(src, dst);
+//				saveBitmap = src;
 				DLH.Converter.saveBitmap(saveBitmap, frameNumber);
 			}
 		} else {

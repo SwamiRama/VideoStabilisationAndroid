@@ -2,9 +2,8 @@ package mainActivity;
 
 import java.io.File;
 
-//import org.bytedeco.javacv.FFmpegFrameGrabber;
-//import org.bytedeco.javacv.FrameGrabber.Exception;
-
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FrameGrabber.Exception;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -14,6 +13,7 @@ import videoStabilisation.StabilisationThread;
 import com.example.videostabilisation.R;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
 	private ImageView image_view;
 	private ProgressBar progressBar;
 
-	// private FFmpegFrameGrabber grabber;
+	private FFmpegFrameGrabber grabber;
 	private File sdDir = Environment.getExternalStorageDirectory();
 	private File file = new File(sdDir, "/Video/Fußball.mp4");
 	private StabilisationThread st;
@@ -95,20 +95,22 @@ public class MainActivity extends Activity {
 	}
 
 	public void start_Button_Click(View v) {
-		// grabber = new FFmpegFrameGrabber(file);
-		// try {
-		// grabber.start();
-		// progressBar.setMax(grabber.getLengthInFrames());
-		//
-		// grabber.stop();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		st = new StabilisationThread(600000, 30, 800, file);
-		new Thread() {
-			public void run() {
+		grabber = new FFmpegFrameGrabber(file);
+		try {
+			grabber.start();
+			progressBar.setMax(grabber.getLengthInFrames());
+			st = new StabilisationThread(grabber.getLengthInTime(),
+					grabber.getFrameRate(), grabber.getLengthInFrames(), file);
+			grabber.stop();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		AsyncTask task = new AsyncTask() {
+			@Override
+			protected Object doInBackground(Object... params) {
 				int i = 0;
+
 				while (!st.isFin()) {
 					final int x = i;
 					runOnUiThread(new Runnable() {
@@ -122,8 +124,10 @@ public class MainActivity extends Activity {
 					});
 					i++;
 				}
+				return null;
 			}
-		}.start();
+		};
+		task.execute(this);
 	}
 
 	// @SuppressWarnings({ "unchecked", "rawtypes" })

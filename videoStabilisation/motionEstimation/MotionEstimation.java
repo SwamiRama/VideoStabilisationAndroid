@@ -47,7 +47,7 @@ public class MotionEstimation {
 		MatOfPoint goodFeaturePoints = new MatOfPoint();
 		Imgproc.goodFeaturesToTrack(imageGray, goodFeaturePoints, numberOfFeaturePoints, 0.01, 30);
 		MatOfPoint2f prevPts = new MatOfPoint2f(goodFeaturePoints.toArray());
-		ArrayList<PointF> points = new ArrayList<PointF>();
+		
 
 		// parameterExtraction = new ParameterExtraction(false,
 		// ValueCalculation.getGoodVectors(vectorsPoints), new PointF(src.Width
@@ -71,8 +71,7 @@ public class MotionEstimation {
 	}
 
 	private Point[][] boxCalculation(MatOfPoint2f prevPts, Bitmap src,
-			Bitmap dst) {
-		Point[][] finishVectors = null;
+			Bitmap dst) {		
 		ArrayList<Point[]> selectedVectors = new ArrayList<Point[]>();
 		BlockMatching blockMatching;
 		int gap = 50;
@@ -89,12 +88,16 @@ public class MotionEstimation {
 
 			}
 		}
-		finishVectors = (Point[][]) selectedVectors.toArray();
-		return (Point[][]) selectedVectors.toArray();
+		
+		return convertVectorsToArray(selectedVectors);
 	}
-
-	public double getMSE() {
-		return 0;// blockMatching.getMSE;
+	
+	private Point[][] convertVectorsToArray(ArrayList<Point[]> sektor) {
+		Point[][] vector = new Point[sektor.size()][];
+		for (int i = 0; i < vector.length; i++) {
+			vector[i] = sektor.get(i);
+		}
+		return vector;
 	}
 
 	public double getTranslationX() {

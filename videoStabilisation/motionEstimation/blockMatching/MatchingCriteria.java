@@ -17,8 +17,7 @@ public class MatchingCriteria {
 		double N = x_width * y_height;
 		for (int x = 0; x < x_width; x++) {
 			for (int y = 0; y < y_height; y++) {
-				MSE += Math.pow(
-						srcBlock.getPixel(x, y) - dstBlock.getPixel(x, y), 2);
+				MSE += Math.pow(srcBlock.getPixel(x, y) - dstBlock.getPixel(x, y), 2);
 			}
 		}
 		return (MSE / N);

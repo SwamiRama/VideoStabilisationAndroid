@@ -31,8 +31,7 @@ public class MotionEstimation {
 	private double oldValueA21;
 	private double oldValueA22;
 
-	public MotionEstimation(int boxSize, int numberOfFeaturePoints,
-			double maxDistance, boolean isLocked) {
+	public MotionEstimation(int boxSize, int numberOfFeaturePoints, double maxDistance, boolean isLocked) {
 		this.boxSize = boxSize;
 		this.numberOfFeaturePoints = numberOfFeaturePoints;
 		this.maxDistance = maxDistance;
@@ -47,51 +46,29 @@ public class MotionEstimation {
 		MatOfPoint goodFeaturePoints = new MatOfPoint();
 		Imgproc.goodFeaturesToTrack(imageGray, goodFeaturePoints, numberOfFeaturePoints, 0.01, 30);
 		MatOfPoint2f prevPts = new MatOfPoint2f(goodFeaturePoints.toArray());
-		
 
-		// parameterExtraction = new ParameterExtraction(false,
-		// ValueCalculation.getGoodVectors(vectorsPoints), new PointF(src.Width
-		// / 2, src.Height / 2));
-		parameterExtraction = new ParameterExtraction(false, boxCalculation(
-				prevPts, src, dst), new Point(src.getWidth() / 2,
-				src.getHeight() / 2));
-
-		// // TEST ////
-		// PointF[][] testVector = {
-		// new PointF[2] {new PointF(0,0),new PointF(1,1)},
-		// new PointF[2] {new PointF(1,1),new PointF(2,2)}
-		// //new PointF[2] {new PointF(20,20),new PointF(21,21)},
-		// //new PointF[2] {new PointF(30,30),new PointF(31,31)},
-		// //new PointF[2] {new PointF(40,40),new PointF(41,41)},
-		// };
-		// parameterExtraction = new ParameterExtraction(false, testVector, new
-		// PointF(src.Width / 2, src.Height / 2));
-		// // TEST ////
-
+		parameterExtraction = new ParameterExtraction(false, boxCalculation(prevPts, src, dst),
+				new Point(src.getWidth() / 2, src.getHeight() / 2));
 	}
 
-	private Point[][] boxCalculation(MatOfPoint2f prevPts, Bitmap src,
-			Bitmap dst) {		
+	private Point[][] boxCalculation(MatOfPoint2f prevPts, Bitmap src, Bitmap dst) {
 		ArrayList<Point[]> selectedVectors = new ArrayList<Point[]>();
 		BlockMatching blockMatching;
 		int gap = 50;
 		selectedVectors = new ArrayList<Point[]>();
 		for (int i = 0; i < prevPts.toList().size(); i++) {
-			if (prevPts.toList().get(i).x > gap
-					&& prevPts.toList().get(i).x < src.getWidth() - gap
-					&& prevPts.toList().get(i).y > gap
-					&& prevPts.toList().get(i).y < src.getHeight() - gap) {
+			if (prevPts.toList().get(i).x > gap && prevPts.toList().get(i).x < src.getWidth() - gap
+					&& prevPts.toList().get(i).y > gap && prevPts.toList().get(i).y < src.getHeight() - gap) {
 
-				blockMatching = new BlockMatching(src, dst, prevPts.toList()
-						.get(i), i);
+				blockMatching = new BlockMatching(src, dst, prevPts.toList().get(i), i);
 				selectedVectors.add(blockMatching.getPoints());
 
 			}
 		}
-		
+
 		return convertVectorsToArray(selectedVectors);
 	}
-	
+
 	private Point[][] convertVectorsToArray(ArrayList<Point[]> sektor) {
 		Point[][] vector = new Point[sektor.size()][];
 		for (int i = 0; i < vector.length; i++) {
@@ -164,5 +141,4 @@ public class MotionEstimation {
 	public double getA22() {
 		return oldValueA22 += parameterExtraction.A22;
 	}
-
 }

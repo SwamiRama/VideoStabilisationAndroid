@@ -2,13 +2,11 @@ package videoStabilisation.motionEstimation.blockMatching;
 
 import org.opencv.core.Point;
 
-
 public class SearchArea {
 	double searchAreaWidth, searchAreaHeight;
 	double featurePoint_X, featurePoint_Y;
 
-	public SearchArea(int searchAreaWidth, int searchAreaHeight,
-			Point featurePoint) {
+	public SearchArea(int searchAreaWidth, int searchAreaHeight, Point featurePoint) {
 		this.searchAreaWidth = searchAreaWidth;
 		this.searchAreaHeight = searchAreaHeight;
 		this.featurePoint_X = featurePoint.x;

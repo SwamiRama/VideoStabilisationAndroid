@@ -32,8 +32,7 @@ public class StabilisationThread {
 	private MotionCompensation motionCompensation;
 
 	@SuppressLint("InlinedApi")
-	public StabilisationThread(long lengthInTime, double frameRate,
-			double maxFrame, File file) {
+	public StabilisationThread(long lengthInTime, double frameRate, double maxFrame, File file) {
 		this.lengthInTime = lengthInTime;
 		this.frameRate = frameRate;
 		this.maxFrame = maxFrame;
@@ -56,11 +55,10 @@ public class StabilisationThread {
 				dst = retriever.getFrameAtTime(currentLengthInTime + mFps);
 			}
 			if (src == null || dst == null) {
-				Log.w("WARNING", "dst or src is NULL near Frame = "
-						+ currentLengthInTime);
+				Log.w("WARNING", "dst or src is NULL near Frame = " + currentLengthInTime);
 			} else {
 				saveBitmap = calculateStabilisation(src, dst);
-//				saveBitmap = src;
+				// saveBitmap = src;
 				DLH.Converter.saveBitmap(saveBitmap, frameNumber);
 			}
 		} else {
@@ -78,22 +76,9 @@ public class StabilisationThread {
 		TranslationX = motionEstimation.getTranslationX();
 		TranslationY = motionEstimation.getTranslationY();
 		Rotation = motionEstimation.getRotation();
-//		xValues.Enqueue(TranslationX);
-//		yValues.Enqueue(TranslationY);
-//		rotationValue.Enqueue(Rotation);
-		// zoomFaktor = motionEstimation.getScaling();
+
 		motionCompensation.bitmapTransformation(TranslationX, TranslationY, Rotation, dst);
 
-		// motionCompensation.startMotionCompensation(0, 0, 45, 0, 0, 0,
-		// dstBitmap);
-		// image =
-		// UnmanagedImage.FromManagedImage(motionCompensation.saveBitmap);
-		// for (int i = 0; i < motionEstimation.vectorsPoints.Length; i++)
-		// {
-		// Drawing.Line(image, motionEstimation.vectorsPoints[i][0],
-		// motionEstimation.vectorsPoints[i][1], Color.Red);
-		// }
-		// return image.ToManagedImage();
 		return motionCompensation.getBitmap();
 	}
 

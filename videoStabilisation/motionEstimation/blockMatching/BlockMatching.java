@@ -16,8 +16,7 @@ public class BlockMatching {
 		Block srcBlock = new Block(boxSize, boxSize, srcPoint, src);
 		Block dstBlock;
 		double MSE = Double.MAX_VALUE;
-		SearchArea searchArea = new SearchArea(boxSize * 2, boxSize * 2,
-				srcPoint);
+		SearchArea searchArea = new SearchArea(boxSize * 2, boxSize * 2, srcPoint);
 		for (int x = searchArea.getStart_X(); x < searchArea.getEnd_X(); x++) {
 			for (int y = searchArea.getStart_Y(); y < searchArea.getEnd_Y(); y++) {
 				dstBlock = new Block(boxSize, boxSize, new Point(x, y), dst);

@@ -69,8 +69,7 @@ public class MainActivity extends Activity {
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 
 		Log.i(TAG, "Trying to load OpenCV library");
-		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this,
-				mOpenCVCallBack)) {
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack)) {
 			Log.e(TAG, "Cannot connect to OpenCV Manager");
 		}
 	}
@@ -84,9 +83,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
+
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -99,11 +96,10 @@ public class MainActivity extends Activity {
 		try {
 			grabber.start();
 			progressBar.setMax(grabber.getLengthInFrames());
-			st = new StabilisationThread(grabber.getLengthInTime(),
-					grabber.getFrameRate(), grabber.getLengthInFrames(), file);
+			st = new StabilisationThread(grabber.getLengthInTime(), grabber.getFrameRate(), grabber.getLengthInFrames(),
+					file);
 			grabber.stop();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		AsyncTask task = new AsyncTask() {
@@ -129,43 +125,4 @@ public class MainActivity extends Activity {
 		};
 		task.execute(this);
 	}
-
-	// @SuppressWarnings({ "unchecked", "rawtypes" })
-	// public void start_Button_Click(View v) {
-	// grabber = new FFmpegFrameGrabber(file);
-	// try {
-	// grabber.start();
-	// progressBar.setMax(grabber.getLengthInFrames());
-	// st = new StabilisationThread(
-	// grabber.getLengthInTime(), grabber.getFrameRate(),
-	// grabber.getLengthInFrames(),file);
-	// grabber.stop();
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// AsyncTask task = new AsyncTask() {
-	// @Override
-	// protected Object doInBackground(Object... params) {
-	// int i = 0;
-	//
-	// while (!st.isFin()) {
-	// final int x = i;
-	// runOnUiThread(new Runnable() {
-	// @Override
-	// public void run() {
-	// st.next();
-	// fps_text.setText(String.valueOf(x));
-	// image_view.setImageBitmap(st.getCurrentBitmap());
-	// progressBar.setProgress(x);
-	// }
-	// });
-	// i++;
-	// }
-	// return null;
-	// }
-	// };
-	// task.execute(this);
-	//
-	// }
 }
